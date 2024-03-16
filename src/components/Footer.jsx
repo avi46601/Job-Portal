@@ -27,11 +27,11 @@ const Footer = () => {
         <div className="container px-5 py-20 mx-auto ">
           <div className="w-full flex flex-wrap gap-10 justify-between -mb-10 -px-4">
             {footerLinks.map(({ id, title, links }) => (
-              <div className="w-auto px-4 " key={id}>
+              <div className="w-auto px-4 " key={id+title}>
                 <h2 className="font-medium text-white tracking-widest text-sm mb-3">{title}</h2>
                 <div className="mb-10 flex flex-10 gap-3" >
                   {links.map((link, indexedDB) => (
-                    <Link to='/' className="text-gray-300 text-sm hover:text-white">
+                    <Link key={link} to='/' className="text-gray-300 text-sm hover:text-white">
                       {link}
                     </Link>
                   ))}

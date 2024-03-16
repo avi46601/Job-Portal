@@ -91,7 +91,7 @@ const Navbar = () => {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  console.log(user);
+  // console.log(user);
 
   const handleCloseNavbar = () => {
     setIsOpen((prev) => !prev);

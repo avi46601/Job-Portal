@@ -2,10 +2,10 @@ import { Outlet, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import { About, AuthPage, Companies, CompanyProfile, FindJobs, JobDetail, UploadJob ,UserProfile} from './pages';
+import { useSelector } from 'react-redux';
 function Layout() {
-  const user = true;
-  const location = useLocation()
-
+  const {user} = useSelector((state)=>state.user);
+  const location = useLocation();
   return user ?
     (<Outlet />): (
     <Navigate to='user-auth' state={{ from: location }} replace />
@@ -13,7 +13,7 @@ function Layout() {
 
 }
 function App() {
-   const user={};
+  const {user} = useSelector((state)=>state.user);
   return (
     <main className='bg-[#f7fdfd]'>
       <Navbar />
