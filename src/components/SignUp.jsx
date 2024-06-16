@@ -7,6 +7,7 @@ import TextInput from "./TextInput";
 import CustomButton from "./CustomButton";
 
 const SignUp = ({ open, setOpen }) => {
+    
   const dispatch = useDispatch();
   const location = useLocation();
 
