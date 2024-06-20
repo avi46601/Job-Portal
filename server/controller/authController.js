@@ -50,14 +50,48 @@ export const register = async (req, res, next) => {
 
 }
 
-export const login = (req, res, next) => {
+export const login = async(req, res, next) => {
 
   const {email, password} =req.body;
 
   if(!(email && password)){
     next("Email and Password are Required")
   }
+  try {
+    
+    const user = await users.findOne({email}).select("+password")
+    if(!user){
+        next("Email is Not Found")
+        return
+    }
+    const isMatch = await user.comparePassword(password);
+    if(!isMatch){
+          next("Password Does Not Matched");
+          return
+    }
+    const token = await jwt.sign(
+        { userId: user._id },
+        process.env.JWT_SECRET, {
+        expiresIn: "1d",
+    })
 
-  
+    return res.status(201).send({
+        status: "Success",
+        user: {
+            _id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            accountType:user.accountType
+        },
+        token,
+    })
+    
+
+  } catch (error) {
+     console.log(error);
+     return res.status(500).json({ message: error.message });
+  }
+
 
 }
