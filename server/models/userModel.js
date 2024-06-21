@@ -62,6 +62,14 @@ userSchema.methods.comparePassword = async function(userPassword){
     return isMatch
 }
 
+//create Jwt
+userSchema.methods.createJWT = async function (){
+   return jwt.sign(
+        { userId: this._id },
+        process.env.JWT_SECRET, {
+        expiresIn: "1d",
+    })
+}
 
 
 const users = mongoose.model("users", userSchema);
