@@ -1,6 +1,7 @@
 import mongoose, { Schema, model } from "mongoose";
 import validator from "validator";
 import jwt from 'jsonwebtoken'
+import bcrypt from 'bcryptjs'
 const companySchema = new Schema({
     name: {
         type: String,
@@ -8,7 +9,9 @@ const companySchema = new Schema({
     },
     email: {
         type: String,
-        required: [true, "email is required"]
+        required: [true, "Email is Required"],
+        unique: true,
+        vaildate: validator.isEmail
     },
     password: {
         type: String,
@@ -31,6 +34,20 @@ const companySchema = new Schema({
     jobPosts: [{ type: Schema.Types.ObjectId, ref: "Jobs" }]
 
 })
+//middleware
+
+companySchema.pre("save", async function (){
+    this.password = await bcrypt.hash(this.password,10);
+})
+
+
+
+//compare Passwords
+companySchema.methods.comparePassword = async function(userPassword){
+    const isMatch = await bcrypt.compare(userPassword,this.password)
+    return isMatch
+}
+
 
 
 const Companies = model('Companies', companySchema)

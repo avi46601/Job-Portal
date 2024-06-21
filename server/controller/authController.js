@@ -24,11 +24,7 @@ export const register = async (req, res, next) => {
             password
         })
 
-        const token = await jwt.sign(
-            { userId: user._id },
-            process.env.JWT_SECRET, {
-            expiresIn: "1d",
-        })
+        const token = user.createJWT();
 
         return res.status(201).send({
             status: "Success",

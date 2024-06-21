@@ -7,6 +7,8 @@ import xss from 'xss-clean'
 import mongoSanitize from 'express-mongo-sanitize'
 import createDbConnection from './config/dbconfig.js';
 import authRouter from './router/authRouter.js';
+import errorMiddleware from './middleware/errorMiddleware.js'
+import userRouter from './router/userRouter.js';
 dotenv.config();
 
 const app= express();
@@ -30,7 +32,8 @@ app.use(morgan("dev"));
 //Router Start From Here
 
 app.use("/api/auth",authRouter)
-
+app.use("/api/user",userRouter)
+app.use(errorMiddleware)
 
 
 const PORT = process.env.PORT || 8000 
