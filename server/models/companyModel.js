@@ -33,7 +33,8 @@ const companySchema = new Schema({
     },
     jobPosts: [{ type: Schema.Types.ObjectId, ref: "Jobs" }]
 
-})
+},
+{timestamps:true})
 //middleware
 
 companySchema.pre("save", async function (){

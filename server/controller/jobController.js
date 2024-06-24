@@ -38,7 +38,7 @@ export const createJob = async (req, res, next) => {
       salary,
       vacancies,
       experience,
-      detail: { desc, requirements },
+      detail: [ desc, requirements ],
       company: id,
     };
 

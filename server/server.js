@@ -39,7 +39,7 @@ app.use(morgan("dev"));
 app.use("/api/auth",authRouter)
 app.use("/api/user",userRouter)
 app.use("/api/companies",companiesRouter)
-app.use("api/job",jobRouter)
+app.use("/api/jobs",jobRouter)
 
 app.use(errorMiddleware)
 

@@ -34,8 +34,8 @@ export const register = async (req, res, next) => {
       });
   
       // user token
-      const token = company.createJWT();
-  
+      const token = await company.createJWT();
+ 
       res.status(201).json({
         success: true,
         message: "Company Account Created Successfully",
@@ -122,13 +122,13 @@ export const updateCompanyProfile = async (req, res, next) => {
         new: true,
       });
   
-      const token = company.createJWT();
+      const token = await company.createJWT();
   
       company.password = undefined;
   
       res.status(200).json({
         success: true,
-        message: "Company Profile Updated SUccessfully",
+        message: "Company Profile Updated Successfully",
         company,
         token,
       });
@@ -166,7 +166,7 @@ export const updateCompanyProfile = async (req, res, next) => {
   export const getCompanies = async (req, res, next) => {
     try {
       const { search, sort, location } = req.query;
-  
+      console.log(sort);
       //conditons for searching filters
       const queryObject = {};
   
