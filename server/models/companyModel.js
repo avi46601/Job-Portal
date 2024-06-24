@@ -48,6 +48,15 @@ companySchema.methods.comparePassword = async function(userPassword){
     return isMatch
 }
 
+//create Jwt
+companySchema.methods.createJWT = async function (){
+    return jwt.sign(
+         { userId: this._id },
+         process.env.JWT_SECRET, {
+         expiresIn: "1d",
+     })
+ }
+ 
 
 
 const Companies = model('Companies', companySchema)

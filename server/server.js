@@ -6,9 +6,14 @@ import morgan from 'morgan';
 import xss from 'xss-clean'
 import mongoSanitize from 'express-mongo-sanitize'
 import createDbConnection from './config/dbconfig.js';
+
 import authRouter from './router/authRouter.js';
-import errorMiddleware from './middleware/errorMiddleware.js'
 import userRouter from './router/userRouter.js';
+import companiesRouter from './router/companiesRouter.js';
+import jobRouter from './router/jobRouter.js';
+
+import errorMiddleware from './middleware/errorMiddleware.js'
+
 dotenv.config();
 
 const app= express();
@@ -33,6 +38,9 @@ app.use(morgan("dev"));
 
 app.use("/api/auth",authRouter)
 app.use("/api/user",userRouter)
+app.use("/api/companies",companiesRouter)
+app.use("api/job",jobRouter)
+
 app.use(errorMiddleware)
 
 
