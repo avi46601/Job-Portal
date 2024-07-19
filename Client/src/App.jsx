@@ -3,9 +3,11 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import { About, AuthPage, Companies, CompanyProfile, FindJobs, JobDetail, UploadJob ,UserProfile} from './pages';
 import { useSelector } from 'react-redux';
+
 function Layout() {
   const {user} = useSelector((state)=>state.user);
   const location = useLocation();
+
   return user ?
     (<Outlet />): (
     <Navigate to='user-auth' state={{ from: location }} replace />

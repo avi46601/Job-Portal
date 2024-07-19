@@ -11,7 +11,7 @@ const Auth = () => {
 
   let from = location?.state?.from?.pathname || "/";
 
-  if (user.token) {
+  if (user?.token) {
     return window.location.replace(from);
   }
   return (
