@@ -7,9 +7,15 @@ import { AiOutlineClose, AiOutlineLogout } from "react-icons/ai";
 import { Link } from 'react-router-dom';
 import CustomButton from './CustomButton';
 import { users } from '../utils/data';
+import { useDispatch, useSelector } from 'react-redux';
+import { Logout } from '../redux/userSlice';
 
 function MenuList({ user, onClick }) {
-  const handleLogOut = () => { };
+  const dispatch =useDispatch();
+  const handleLogOut = () => { 
+    dispatch(Logout())
+    window.location.replace('/');
+  };
 
   return (
     <div>
@@ -24,6 +30,7 @@ function MenuList({ user, onClick }) {
                 {user?.jobTitle ?? user?.email}
               </span>
             </div>
+            {console.log(user)}
             <img
               src={user?.profileUrl}
               alt='user Profile'
@@ -64,7 +71,7 @@ function MenuList({ user, onClick }) {
               <Menu.Item>
                 {({ active }) => (
                   <button
-                    onclick={() => handleLogOut()}
+                    onClick={() => handleLogOut()}
                     className={`${active ? "bg-blue-500 text-white" : "text-gray-900"} group flex w-full items-center rounded-md p-2 text-sm`}
 
                   >
@@ -87,11 +94,11 @@ function MenuList({ user, onClick }) {
 }
 const Navbar = () => {
 
-  const user = users[1];
+  const {user} = useSelector((state)=>state.user);
 
   const [isOpen, setIsOpen] = useState(false);
 
-  // console.log(user);
+  console.log(user);
 
   const handleCloseNavbar = () => {
     setIsOpen((prev) => !prev);

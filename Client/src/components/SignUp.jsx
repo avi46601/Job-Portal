@@ -38,8 +38,8 @@ const SignUp = ({ open, setOpen }) => {
       } else URL = "companies/register"
     } else {
       if (accountType === 'seeker') {
-        URL = "auth/register";
-      } else URL = "companies/register"
+        URL = "auth/login";
+      } else URL = "companies/login"
     }
 
     try {
@@ -48,18 +48,21 @@ const SignUp = ({ open, setOpen }) => {
         data: data,
         method: "POST",
       });
+  
       if (res?.status === 'failed') {
         setErrMsg(res?.message);
       }
       else {
         setErrMsg("");
-        const data = { token: res?.token, ...res?.user }
+        console.log(res);
+        const data = { token: res.data?.token, ...res.data?.user }
         dispatch(Login(data));
+        
         localStorage.setItem("userInfo", JSON.stringify(data));
         window.location.replace(from);
       }
     } catch (error) {
-
+      console.log(error)
     }
   };
 

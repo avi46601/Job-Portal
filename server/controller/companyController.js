@@ -96,10 +96,10 @@ export const signIn = async (req, res, next) => {
 
 export const updateCompanyProfile = async (req, res, next) => {
     const { name, contact, location, profileUrl, about } = req.body;
-  
+ 
     try {
       // validation
-      if (!name || !location || !about || !contact || !profileUrl) {
+      if (!name || !location || !about || !contact ) {
         next("Please Provide All Required Fields");
         return;
       }
@@ -121,12 +121,12 @@ export const updateCompanyProfile = async (req, res, next) => {
       const company = await Companies.findByIdAndUpdate(id, updateCompany, {
         new: true,
       });
-  
+      console.log(company);
       const token = await company.createJWT();
   
       company.password = undefined;
   
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: "Company Profile Updated Successfully",
         company,
