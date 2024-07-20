@@ -24,7 +24,7 @@ export const register = async (req, res, next) => {
             password
         })
 
-        const token = user.createJWT();
+        const token = await user.createJWT();
 
         return res.status(201).send({
             status: "Success",

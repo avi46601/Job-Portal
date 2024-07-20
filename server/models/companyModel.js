@@ -28,7 +28,7 @@ const companySchema = new Schema({
     about: {
         type: String
     },
-    profielURL: {
+    profileUrl: {
         type: String
     },
     jobPosts: [{ type: Schema.Types.ObjectId, ref: "Jobs" }]

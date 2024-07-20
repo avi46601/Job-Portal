@@ -2,7 +2,7 @@ import {createSlice } from "@reduxjs/toolkit";
 import { users } from "../utils/data";
 
 const initialState={
-    user: JSON.parse(window?.localStorage.getItem("userInfo")) ,
+    user: JSON.parse(window?.localStorage.getItem("userInfo")) ?? {} ,
 }
 
 const userSlice=createSlice({
@@ -11,12 +11,14 @@ const userSlice=createSlice({
     reducers:{
         login(state,action){
             state.user=action.payload.user;
-
         },
-        logout(state){
-            state.user=null;
-            localStorage?.removeItem("userInfo");  
-        },
+        logout(state) {
+            console.log("Logging out...");
+            state.user = null;
+            localStorage.removeItem("userInfo");
+            console.log("userInfo removed from localStorage.");
+          },
+          
     },
 });
 

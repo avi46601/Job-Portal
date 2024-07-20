@@ -17,16 +17,16 @@ export const apiRequest = async ({url, token, data, method})=>{
                 Authorization: token ? `Bearer ${token}` :"",
             }
         })
+        return result;
     } catch (error) {
-        
+        console.log(error)
     }
 }
 
 export const handleFileUpload = async (uploadFile)=>{
     const formData =new FormData();
     formData.append("file",uploadFile);
-    formData.append("upload_present","jobFinder");
-
+    formData.append("upload_preset","JobFinder");
     try {
         const response = await axios.post("https://api.cloudinary.com/v1_1/dy1i08lpr/image/upload",formData);
         return response.data.secure_url;

@@ -8,6 +8,8 @@ import { FiPhoneCall, FiEdit3, FiUpload } from "react-icons/fi";
 import { Link, useParams } from "react-router-dom";
 import { companies, jobs } from "../utils/data";
 import { CustomButton, JobCard, Loading, TextInput } from "../components";
+import { apiRequest, handleFileUpload } from "../utils";
+import { Login } from "../redux/userSlice";
 
 const CompnayForm = ({ open, setOpen }) => {
   const { user } = useSelector((state) => state.user);
@@ -19,20 +21,57 @@ const CompnayForm = ({ open, setOpen }) => {
     formState: { errors },
   } = useForm({
     mode: "onChange",
-    defaultValues: { ...user?.user },
+    defaultValues: { ...user },
   });
 
   const dispatch = useDispatch();
   const [profileImage, setProfileImage] = useState("");
   const [uploadCv, setUploadCv] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [errMsg, setErrMsg] = useState({ status: "false", message: "" });
 
-  const onSubmit = () => {};
+
+  const onSubmit = async (data) => {
+    setIsLoading(true);
+    setErrMsg(null);
+    console.log(profileImage);
+    const url = profileImage && (await handleFileUpload(profileImage));
+    console.log(url)
+    const newData = url ? { ...data, profileUrl: url } : data;
+    try {
+      const res = await apiRequest({
+        url: "/companies/update-company",
+        token: user?.token,
+        data: newData,
+        method: "PUT"
+      })
+      setTimeout(()=>{
+        setIsLoading(false);
+      },5000)
+      
+      if (res.status == "failed") {
+        setErrMsg({ ...res.data })
+      }
+      else {
+        setErrMsg({ status: "success", message: res.data.message });
+        const data = { token: res.data?.token, ...res.data?.company }
+        dispatch(Login(data));
+        localStorage.setItem("userInfo", JSON.stringify(data));
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000)
+      }
+    } catch (error) {
+      console.log(error);
+      setIsLoading()
+    }
+  };
 
   const closeModal = () => setOpen(false);
 
   return (
     <>
-      <Transition appear show={opener ?? false} as={Fragment}>
+      <Transition appear show={open ?? false} as={Fragment}>
         <Dialog as='div' className='relative z-50' onClose={closeModal}>
           <Transition.Child
             as={Fragment}
@@ -139,11 +178,15 @@ const CompnayForm = ({ open, setOpen }) => {
                     </div>
 
                     <div className='mt-4'>
+                    {
+                      isLoading ? <Loading /> :
+                 
                       <CustomButton
                         type='submit'
                         containerStyles='inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-8 py-2 text-sm font-medium text-white hover:bg-[#1d4fd846] hover:text-[#1d4fd8] focus:outline-none '
                         title={"Submit"}
                       />
+                         }
                     </div>
                   </form>
                 </Dialog.Panel>
@@ -159,12 +202,36 @@ const CompnayForm = ({ open, setOpen }) => {
 const CompanyProfile = () => {
   const params = useParams();
   const { user } = useSelector((state) => state.user);
-  const [info, setInfo] = useState(null);
+  const [info, setInfo] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [openForm, setOpenForm] = useState(false);
 
+  const fetchCompany = async () => {
+    setIsLoading(false);
+    let id = null;
+    if (params.id && params.id !== undefined) {
+      id = params.id;
+    }
+    else {
+      id = user?._id;
+    }
+    try {
+      const res = await apiRequest({
+        url: "/companies/get-company/" + id,
+        method: "GET",
+      })
+      const data = res.data.data
+      await setInfo(data);
+    
+      setIsLoading(false)
+    } catch (error) {
+      console.log(error)
+      setIsLoading(false)
+    }
+  }
+  console.log(info);
   useEffect(() => {
-    setInfo(companies[parseInt(params?.id) - 1 ?? 0]);
+    fetchCompany();
     window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
   }, []);
 
@@ -180,8 +247,8 @@ const CompanyProfile = () => {
             Welcome, {info?.name}
           </h2>
 
-          {user?.user?.accountType === undefined &&
-            info?._id === user?.user?._id && (
+          {user?.accountType === undefined &&
+            info?._id === user?._id && (
               <div className='flex items-center justifu-center py-5 md:py-0 gap-4'>
                 <CustomButton
                   onClick={() => setOpenForm(true)}
@@ -222,7 +289,7 @@ const CompanyProfile = () => {
         <p>Jobs Posted</p>
 
         <div className='flex flex-wrap gap-3'>
-          {jobs?.map((job, index) => {
+          {info?.jobPosts?.map((job, index) => {
             const data = {
               name: info?.name,
               email: info?.email,
