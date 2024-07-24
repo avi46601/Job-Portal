@@ -165,33 +165,33 @@ export const updateCompanyProfile = async (req, res, next) => {
   //GET ALL COMPANIES
   export const getCompanies = async (req, res, next) => {
     try {
-      const { search, sort, location } = req.query;
-      console.log(sort);
+      const { search, sort, cmpLoc } = req.query;
+      console.log(req.query);
       //conditons for searching filters
       const queryObject = {};
   
       if (search) {
         queryObject.name = { $regex: search, $options: "i" };
       }
-  
-      if (location) {
-        queryObject.location = { $regex: location, $options: "i" };
+      if (cmpLoc) {
+        queryObject.location = { $regex: cmpLoc, $options: "i" };
+        console.log("Location filter applied:", queryObject.location);
       }
   
       let queryResult = Companies.find(queryObject).select("-password");
-  
+      
       // SORTING
       if (sort === "Newest") {
-        queryResult = queryResult.sort("-createdAt");
+        queryResult = queryResult?.sort("-createdAt");
       }
       if (sort === "Oldest") {
-        queryResult = queryResult.sort("createdAt");
+        queryResult = queryResult?.sort("createdAt");
       }
       if (sort === "A-Z") {
-        queryResult = queryResult.sort("name");
+        queryResult = queryResult?.sort("name");
       }
       if (sort === "Z-A") {
-        queryResult = queryResult.sort("-name");
+        queryResult = queryResult?.sort("-name");
       }
   
       // PADINATIONS
@@ -207,7 +207,7 @@ export const updateCompanyProfile = async (req, res, next) => {
       // queryResult = queryResult.skip(skip).limit(limit);
   
       // show mopre instead of moving to next page
-      queryResult = queryResult.limit(limit * page);
+      queryResult = queryResult?.limit(limit * page);
   
       const companies = await queryResult;
   

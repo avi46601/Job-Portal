@@ -34,3 +34,37 @@ export const handleFileUpload = async (uploadFile)=>{
         console.log(error)
     }
 }
+
+
+export const updateUrl = ({ pageNum,
+    query,
+    cmpLoc,
+    sort,
+    navigate,
+    location,
+    jType,
+    exp}) =>{
+   
+     const params =new URLSearchParams();
+     if(pageNum && pageNum >1){
+        params.set("page",pageNum)
+     }
+     if(query){
+        params.set("query",query)
+     }
+     if(cmpLoc){
+        params.set("cmpLoc",cmpLoc)
+     }
+     if(sort){
+        params.set("sort",sort)
+     }
+     if(jType){
+        params.set("jType",jType)
+     }
+     if(exp){
+        params.set("exp",exp);
+     }
+     const newUrl =`${location.pathname}?${params.toString()}`;
+     navigate(newUrl,{replace:true});
+     return newUrl
+}

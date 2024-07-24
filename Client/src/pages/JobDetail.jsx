@@ -1,22 +1,63 @@
 import { useEffect, useState } from "react";
-import { Linkedin } from "../assets";
 import moment from "moment";
 import { AiOutlineSafetyCertificate } from "react-icons/ai";
 import { useParams } from "react-router-dom";
-import { jobs } from "../utils/data";
 import { CustomButton, JobCard } from "../components";
+import { useSelector } from "react-redux";
+import { apiRequest } from "../utils";
+import { set } from "react-hook-form";
 
 const JobDetail = () => {
-  const params = useParams();
-  const id = parseInt(params.id) - 1;
-  const [job, setJob] = useState(jobs[0]);
+  const { user } = useSelector((state) => state.user)
+  const { id } = useParams();
+
+  const [job, setJob] = useState();
   const [selected, setSelected] = useState("0");
+  const [isFetching, setIsFetching] = useState(false);
+  const [similarJobs, setSimilarJobs] = useState();
+  const getJobDetails = async () => {
+    setIsFetching(true);
+    try {
+      const res = await apiRequest({
+        url: "/jobs/get-job-detail/" + id,
+        method: "GET",
+      })
+
+      setJob(res?.data.data);
+      setSimilarJobs(res?.data?.similarJobs);
+      setIsFetching(false)
+
+    } catch (error) {
+      console.log(error)
+      setIsFetching(false)
+    }
+  }
 
   useEffect(() => {
-    setJob(jobs[id ?? 0]);
+    getJobDetails()
     window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
   }, [id]);
 
+  const handleDeletePost = async () => {
+    setIsFetching(true);
+    try {
+      if (window.confirm("Delete Job Post ?")) {
+        const res = await apiRequest({
+          url: "/jobs/delete-job/" + job?._id,
+          token: user?.token,
+          method: "DELETE"
+        })
+        if (res.data?.success) {
+          alert(res.data.message);
+          window.location.replace("/")
+        }
+      }
+    }
+    catch (error) {
+      console.log(error);
+      setIsFetching(false)
+    }
+  }
   return (
     <div className='container mx-auto'>
       <div className='w-full flex flex-col md:flex-row gap-10'>
@@ -56,7 +97,7 @@ const JobDetail = () => {
             <div className='bg-[#bdf4c8] w-40 h-16 rounded-lg flex flex-col items-center justify-center'>
               <span className='text-sm'>Salary</span>
               <p className='text-lg font-semibold text-gray-700'>
-                $ {job?.salary}
+                {job?.salary}
               </p>
             </div>
 
@@ -86,21 +127,19 @@ const JobDetail = () => {
             <CustomButton
               onClick={() => setSelected("0")}
               title='Job Description'
-              containerStyles={`w-full flex items-center justify-center py-3 px-5 outline-none rounded-full text-sm ${
-                selected === "0"
+              containerStyles={`w-full flex items-center justify-center py-3 px-5 outline-none rounded-full text-sm ${selected === "0"
                   ? "bg-black text-white"
                   : "bg-white text-black border border-gray-300"
-              }`}
+                }`}
             />
 
             <CustomButton
               onClick={() => setSelected("1")}
               title='Company'
-              containerStyles={`w-full flex items-center justify-center  py-3 px-5 outline-none rounded-full text-sm ${
-                selected === "1"
+              containerStyles={`w-full flex items-center justify-center  py-3 px-5 outline-none rounded-full text-sm ${selected === "1"
                   ? "bg-black text-white"
                   : "bg-white text-black border border-gray-300"
-              }`}
+                }`}
             />
           </div>
 
@@ -111,11 +150,11 @@ const JobDetail = () => {
 
                 <span className='text-base'>{job?.detail[0]?.desc}</span>
 
-                {job?.detail[0]?.requirement && (
+                {job?.detail[0]?.requirements && (
                   <>
                     <p className='text-xl font-semibold mt-8'>Requirement</p>
                     <span className='text-base'>
-                      {job?.detail[0]?.requirement}
+                      {job?.detail[0]?.requirements}
                     </span>
                   </>
                 )}
@@ -137,10 +176,18 @@ const JobDetail = () => {
           </div>
 
           <div className='w-full'>
-            <CustomButton
-              title='Apply Now'
-              containerStyles={`w-full flex items-center justify-center text-white bg-black py-3 px-5 outline-none rounded-full text-base`}
-            />
+            {
+              user._id === job?.company?._id ? (<CustomButton
+                title='Delete Job'
+                onClick={handleDeletePost}
+                containerStyles={`w-full flex items-center justify-center text-white bg-black py-3 px-5 outline-none rounded-full text-base`}
+              />) :
+                (<CustomButton
+                  title='Apply Now'
+                  containerStyles={`w-full flex items-center justify-center text-white bg-black py-3 px-5 outline-none rounded-full text-base`}
+                />)
+            }
+
           </div>
         </div>
 
@@ -149,9 +196,14 @@ const JobDetail = () => {
           <p className='text-gray-500 font-semibold'>Similar Job Post</p>
 
           <div className='w-full flex flex-wrap gap-4'>
-            {jobs?.slice(0, 6).map((job, index) => (
-              <JobCard job={job} key={index} />
-            ))}
+            {similarJobs?.slice(0, 6).map((job, index) => {
+              const data = {
+                name: job?.company.name,
+                logo: job?.company.profileUrl,
+                ...job,
+              };
+              return <JobCard job={data} key={index} />
+            })}
           </div>
         </div>
       </div>

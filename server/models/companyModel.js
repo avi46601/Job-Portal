@@ -34,30 +34,30 @@ const companySchema = new Schema({
     jobPosts: [{ type: Schema.Types.ObjectId, ref: "Jobs" }]
 
 },
-{timestamps:true})
+    { timestamps: true })
 //middleware
 
-companySchema.pre("save", async function (){
-    this.password = await bcrypt.hash(this.password,10);
+companySchema.pre("save", async function () {
+    this.password = await bcrypt.hash(this.password, 10);
 })
 
 
 
 //compare Passwords
-companySchema.methods.comparePassword = async function(userPassword){
-    const isMatch = await bcrypt.compare(userPassword,this.password)
+companySchema.methods.comparePassword = async function (userPassword) {
+    const isMatch = await bcrypt.compare(userPassword, this.password)
     return isMatch
 }
 
 //create Jwt
-companySchema.methods.createJWT = async function (){
+companySchema.methods.createJWT = async function () {
     return jwt.sign(
-         { userId: this._id },
-         process.env.JWT_SECRET, {
-         expiresIn: "1d",
-     })
- }
- 
+        { userId: this._id },
+        process.env.JWT_SECRET, {
+        expiresIn: "1d",
+    })
+}
+
 
 
 const Companies = model('Companies', companySchema)

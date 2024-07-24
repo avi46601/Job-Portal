@@ -10,8 +10,7 @@ const jobSchema = new Schema({
     salary: { type: Number, required: [true, "Salary in required"] },
     vacancies: { type: Number },
     experience: { type: Number, default: 0 },
-    details: [{ desc: { type: String } },
-    { requirements: { type: String } }],
+    detail: [{ desc: { type: String },requirements: { type: String } }],
 
     applications: { type: Schema.Types.ObjectId, ref: "users" }
 },
