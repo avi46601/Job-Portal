@@ -30,7 +30,6 @@ export const createJob = async (req, res, next) => {
 
     if (!mongoose.Types.ObjectId.isValid(id))
       return res.status(404).send(`No Company with id: ${id}`);
-
     const jobPost = {
       jobTitle,
       jobType,
@@ -38,7 +37,7 @@ export const createJob = async (req, res, next) => {
       salary,
       vacancies,
       experience,
-      detail: [ desc, requirements ],
+      detail: [{ desc, requirements }],
       company: id,
     };
 
@@ -251,7 +250,7 @@ export const deleteJobPost = async (req, res, next) => {
 
     res.status(200).send({
       success: true,
-      messsage: "Job Post Delted Successfully.",
+      message: "Job Post Deleted Successfully.",
     });
   } catch (error) {
     console.log(error);

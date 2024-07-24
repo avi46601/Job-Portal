@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { BiBriefcaseAlt2 } from "react-icons/bi";
 import { BsStars } from "react-icons/bs";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
-
+import { updateUrl,apiRequest } from "../utils";
 import Header from "../components/Header";
 import { experience, jobTypes, jobs } from "../utils/data";
 import { CustomButton, JobCard, ListBox } from "../components";
@@ -12,7 +12,7 @@ const FindJobs = () => {
   const [sort, setSort] = useState("Newest");
   const [page, setPage] = useState(1);
   const [numPage, setNumPage] = useState(1);
-  const [recordCount, setRecordCount] = useState(0);
+  const [recordCount, setRecordsCount] = useState(0);
   const [data, setData] = useState([]);
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -25,6 +25,33 @@ const FindJobs = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const fetchCompanies = async () => {
+    setIsFetching(true);
+    const newUrl = updateUrl({
+      pageNum: page,
+      query: searchQuery,
+      cmpLoc: jobLocation,
+      sort: sort,
+      navigate: navigate,
+      location: location,
+      jType:filterJobTypes,
+      exp:filterExp,
+    });
+    try {
+      const res = await apiRequest({
+        url: "/jobs/" + newUrl,
+        method: "GET"
+      })
+      // console.log(res);
+      setNumPage(res.data.numOfPage);
+      setRecordsCount(res.data.total)
+      setData(res.data.data);
+      setIsFetching(false)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  console.log(data);
   const filterJobs = (val) => {
     if (filterJobTypes?.includes(val)) {
       setFilterJobTypes(filterJobTypes.filter((el) => el != val));
@@ -37,12 +64,17 @@ const FindJobs = () => {
     setFilterExp(e);
   };
 
+  useEffect(() => {
+    console.log("i'm useEffect")
+    fetchCompanies()
+  }, [page, sort])
+
   return (
     <div>
       <Header
         title='Find Your Dream Job with Ease'
         type='home'
-        handleClick={() => {}}
+        handleClick={() => { }}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         location={jobLocation}
@@ -111,7 +143,7 @@ const FindJobs = () => {
         <div className='w-full md:w-5/6 px-5 md:px-0'>
           <div className='flex items-center justify-between mb-4'>
             <p className='text-sm md:text-base'>
-              Shwoing: <span className='font-semibold'>1,902</span> Jobs
+              Shwoing: <span className='font-semibold'>{recordCount}</span> Jobs
               Available
             </p>
 
@@ -123,9 +155,14 @@ const FindJobs = () => {
           </div>
 
           <div className='w-full flex flex-wrap gap-4'>
-            {jobs.map((job, index) => (
-              <JobCard job={job} key={index} />
-            ))}
+            {data.map((job, index) => {
+              const jobData = {
+                name:job?.company.name,
+                logo:job?.company.profileUrl,
+                ...job
+              };
+              <JobCard job={jobData} key={index} />
+            })}
           </div>
 
           {numPage > page && !isFetching && (

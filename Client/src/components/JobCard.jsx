@@ -3,16 +3,17 @@ import moment from "moment";
 import { Link } from "react-router-dom";
 
 const JobCard = ({ job }) => {
+  
   return (
-    <Link to={`/job-detail/${job?.id}`}>
+    <Link to={`/job-detail/${job?._id}`}>
       <div
         className='w-full md:w-[16rem] 2xl:w-[18rem] h-[16rem] md:h-[18rem] bg-white flex flex-col justify-between shadow-lg 
                 rounded-md px-3 py-5 '
       >
         <div className='flex gap-3'>
           <img
-            src={job?.company?.profileUrl}
-            alt={job?.company?.name}
+            src={job?.logo}
+            alt={job?.name}
             className='w-14 h-14'
           />
 
@@ -26,7 +27,7 @@ const JobCard = ({ job }) => {
         </div>
 
         <div className='py-3'>
-          <p className='text-sm'>
+          <p className='text-sm text-balance text-gray-600'>
             {job?.detail[0]?.desc?.slice(0, 150) + "..."}
           </p>
         </div>

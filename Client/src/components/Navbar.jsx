@@ -30,7 +30,6 @@ function MenuList({ user, onClick }) {
                 {user?.jobTitle ?? user?.email}
               </span>
             </div>
-            {console.log(user)}
             <img
               src={user?.profileUrl}
               alt='user Profile'
@@ -98,8 +97,6 @@ const Navbar = () => {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  console.log(user);
-
   const handleCloseNavbar = () => {
     setIsOpen((prev) => !prev);
   };
@@ -117,7 +114,7 @@ const Navbar = () => {
             <Link to='/'>Find Job</Link>
           </li>
           <li>
-            <Link to='/'>Companies</Link>
+            <Link to='/companies'>Companies</Link>
           </li>
           <li>
             <Link to='/upload-job'>Upload Job</Link>
